@@ -1,0 +1,38 @@
+@font-face {
+        font-family: "Colfax-Bold";
+        src: url("../Fonts/Colfax-Bold.otf");
+}
+
+@font-face {
+    font-family: "Colfax-Regular";
+    src: url("../Fonts/Colfax-Regular.otf");
+}
+
+#send, #changeKeys {
+    -fx-font-family: "Colfax-Bold";
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 1em;
+    -fx-focus-traversable: false;
+    -fx-background-color: #9004FE;
+}
+
+.messajes {
+    -fx-font-family: "Colfax-Bold";
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 2em;
+}
+
+#searchChats {
+    -fx-background-color: #28292E;
+    -fx-background-radius: 5;
+    -fx-focus-color: transparent;
+    -fx-focus-traversable: false;
+    -fx-font-family: "Colfax-Regular"
+}
+
+#sendMessageField {
+    -fx-text-fill: #FFFFFF;
+    -fx-focus-color: transparent;
+    -fx-focus-traversable: false;
+    -fx-font-size: 1.3em;
+}
