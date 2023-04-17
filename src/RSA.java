@@ -6,7 +6,49 @@ import java.math.BigInteger;
 public class RSA {
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-    public void init() {
+    public void init() throws IOException {
+        while(true){
+            System.out.println("\nRSA");
+            System.out.print("Ingrese la operación que desea realizar: \n1)Generar claves \n2)Encriptar mensaje \n3)Desencriptar mensaje \nOpción: ");
+            int option = Integer.parseInt(br.readLine());
+            System.out.println();
+
+            switch (option){
+                case 1:
+                    generateKeys();
+                    break;
+                case 2:
+                    int[] publicKey = new int[2];
+                    System.out.println("Digite la clave pública compartida por el destinatario: ");
+                    System.out.print("n: ");
+                    publicKey[0] = Integer.parseInt(br.readLine());
+                    System.out.print("e: ");
+                    publicKey[1] = Integer.parseInt(br.readLine());
+                    encrypt(publicKey);
+                    break;
+                case 3:
+                    int[] privateKey = new int[2];
+                    System.out.println("Digite su clave privada: ");
+                    System.out.print("n: ");
+                    privateKey[0] = Integer.parseInt(br.readLine());
+                    System.out.print("d: ");
+                    privateKey[1] = Integer.parseInt(br.readLine());
+                    decrypt(privateKey);
+                    break;
+                default:
+                    System.out.println("Opción no válida");
+            }
+
+            System.out.println("\nPresione [Q] para salir o cualquier otra tecla para continuar");
+            String exit = br.readLine();
+
+            if (exit.equals("Q") || exit.equals("q")){
+                break;
+            }
+        }
+    }
+
+    public void generateKeys(){
         int[] primes = new int[2];
 
         try {
@@ -36,13 +78,10 @@ public class RSA {
             }
 
             int[] publicKey = {product, e};
-            System.out.println("LLAVE PÚBLICA (n,e): (" + publicKey[0] + "," + publicKey[1] + ")\n");
+            System.out.println("\nLLAVE PÚBLICA (n,e): (" + publicKey[0] + "," + publicKey[1] + ")");
 
             int[] privateKey = {product, inverse(e, eulerFunction)};
-            System.out.println("LLAVE PRIVADA (n,d): (" + privateKey[0] + "," + privateKey[1] + ")\n");
-
-            encrypt(publicKey);
-            decrypt(privateKey);
+            System.out.println("LLAVE PRIVADA (n,d): (" + privateKey[0] + "," + privateKey[1] + ")");
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -70,11 +109,9 @@ public class RSA {
     public int inverse(int num, int mod) {
         Euclides euclides = new Euclides();
         int[] coefBenzout = euclides.euclidesExtendido(num, mod);
-
         if (coefBenzout[1] < 0) {
             return coefBenzout[1] + mod;
         }
-
         return coefBenzout[1];
     }
 
@@ -105,7 +142,7 @@ public class RSA {
             String messageASCII = "";
             String decryptedMessage = "";
 
-            System.out.println("Ingrese el mensaje que desea desencriptar: ");
+            System.out.print("MENSAJE ENCRIPTADO: ");
             String encryptedMessage = br.readLine();
             message = encryptedMessage.split("\\s+");
 
@@ -115,16 +152,28 @@ public class RSA {
 
             for (int i = 0; i < message.length; i++){
                 numero = new BigInteger(message[i]);
-                resultado = numero.pow(privateKey[1]);
+                resultado = fastExponentiation(numero, privateKey[1], modulo);
                 decryptedMessage = decryptedMessage + resultado.mod(modulo) + " ";
                 messageASCII = messageASCII + Character.toString(((char) Integer.parseInt(String.valueOf(resultado.mod(modulo)))));
             }
 
-            System.out.println(messageASCII);
+            System.out.println("MENSAJE DESENCRIPTADO: " + messageASCII);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static BigInteger fastExponentiation(BigInteger base, int exponent, BigInteger modulo) {
+        BigInteger result = BigInteger.ONE;
+        while (exponent > 0) {
+            if (exponent % 2 == 1) {
+                result = result.multiply(base).mod(modulo);
+            }
+            base = base.multiply(base).mod(modulo);
+            exponent /= 2;
+        }
+        return result;
     }
 
     public static boolean isPrime(int num) {
